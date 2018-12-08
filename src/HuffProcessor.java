@@ -52,7 +52,7 @@ public class HuffProcessor {
 	}
 	private void writeCompressedBits(String[] codings,BitInputStream in, BitOutputStream out) {
 		while(true) {
-			int bits=in.readBits(8);
+			int bits=in.readBits(BITS_PER_WORD);
 			if(bits==-1) {
 				break;
 			}
@@ -61,19 +61,20 @@ public class HuffProcessor {
 		}
 		String c = codings[PSEUDO_EOF];
 		out.writeBits(c.length(), Integer.parseInt(c,2));
-		out.close();
-
 	}	
 	
 	private void writeHeader(HuffNode root,BitOutputStream out) {
-		if(root.myLeft!=null||root.myRight!=null) {
+		if(root==null) {
+			return;
+		}
+		if(root.myLeft==null&&root.myRight==null) {
+			out.writeBits(1, 1);
+			out.writeBits(BITS_PER_WORD+1,root.myValue);
+		}
+		else {
 			out.writeBits(1, 0);
 			writeHeader(root.myLeft,out);
 			writeHeader(root.myRight,out);
-		}
-		else {
-			out.writeBits(1, 1);
-			out.writeBits(BITS_PER_WORD+1,root.myValue);
 		}
 	}
 	private String[] makeCodingsFromTree(HuffNode root) {
@@ -82,9 +83,7 @@ public class HuffProcessor {
 	    return encodings;
 	}
 	private void codingHelper(HuffNode root,String r, String[] encodings) {
-		if (root==null) {
-			throw new HuffException("fdsfd");
-		}
+		
 		if (root.myLeft==null&&root.myRight==null) {
 	        encodings[root.myValue] = r;
 	        return;
@@ -115,7 +114,7 @@ public class HuffProcessor {
 		while(pq.size()>1) {
 			HuffNode left=pq.remove();
 			HuffNode right=pq.remove();
-			HuffNode t=new HuffNode(0,left.myWeight+right.myWeight,null,null);
+			HuffNode t=new HuffNode(0,left.myWeight+right.myWeight,left,right);
 			pq.add(t);
 		}
 		HuffNode root=pq.remove();
