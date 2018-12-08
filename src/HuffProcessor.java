@@ -67,14 +67,14 @@ public class HuffProcessor {
 		if(root==null) {
 			return;
 		}
-		if(root.myLeft==null&&root.myRight==null) {
-			out.writeBits(1, 1);
-			out.writeBits(BITS_PER_WORD+1,root.myValue);
-		}
-		else {
+		if(root.myLeft!=null||root.myRight!=null) {
 			out.writeBits(1, 0);
 			writeHeader(root.myLeft,out);
 			writeHeader(root.myRight,out);
+		}
+		else {
+			out.writeBits(1, 1);
+			out.writeBits(BITS_PER_WORD+1,root.myValue);
 		}
 	}
 	private String[] makeCodingsFromTree(HuffNode root) {
@@ -83,7 +83,6 @@ public class HuffProcessor {
 	    return encodings;
 	}
 	private void codingHelper(HuffNode root,String r, String[] encodings) {
-		
 		if (root.myLeft==null&&root.myRight==null) {
 	        encodings[root.myValue] = r;
 	        return;
