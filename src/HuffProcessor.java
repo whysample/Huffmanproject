@@ -67,7 +67,7 @@ public class HuffProcessor {
 		readCompressedBits(root,in,out);
 		out.close();
 		}
-	public void readCompressedBits(HuffNode e, BitInputStream in, BitOutputStream out) {
+	private void readCompressedBits(HuffNode e, BitInputStream in, BitOutputStream out) {
 		HuffNode current = e;
 		while(current.myValue!=PSEUDO_EOF) {
 			int bits=in.readBits(1);
@@ -94,7 +94,7 @@ public class HuffProcessor {
 			}
 		}
 	}
-	public HuffNode readTreeHeader(BitInputStream in) {
+	private HuffNode readTreeHeader(BitInputStream in) {
 		int bit=in.readBits(1);
 		if(bit==-1) {
 			throw new HuffException("readBits failed" + bit);
